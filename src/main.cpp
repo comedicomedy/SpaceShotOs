@@ -3,6 +3,7 @@
 #include <Adafruit_BMP280.h>
 #include <SerialFlash.h>
 #include <SD.h>
+#include <GetAltitude.hpp>
 
 Adafruit_BMP280 bmp;
 Adafruit_MPU6050 mpu;

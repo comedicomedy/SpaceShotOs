@@ -1,4 +1,5 @@
-#include <Adafruit_BMP280.h>
+#include <math.h>
+#include <cstdlib>
 
 float getAltitude(float altitude, float pressure, float temp){
   temp = cToF(temp) + 459.67;
@@ -7,7 +8,11 @@ float getAltitude(float altitude, float pressure, float temp){
   altitude = altitude/101325;
   altitude = log(altitude);
   altitude = altitude * 287.053;
-  altitude = altitude * temp * 5/9;
+  altitude = altitude * temp * 0.566;
+  altitude = altitude / -9.8;
+  altitude = abs(altitude);
+
+  return altitude;
 }
 
 float cToF(float temp){
