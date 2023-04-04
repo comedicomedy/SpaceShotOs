@@ -1,23 +1,20 @@
 #include <Adafruit_BMP280.h>
 
-Adafruit_BMP280 bmp;
+float getAltitude(float altitude, float pressure, float temp){
+  temp = cToF(temp) + 459.67;
 
-float temp = bmp.readTemperature();
-
-float getAltitude(float altitude){
- 
-  altitude = bmp.readPressure() * 10;
+  altitude = pressure * 10;
   altitude = altitude/101325;
   altitude = log(altitude);
   altitude = altitude * 287.053;
-  altitude = cToF(temp) + 459.67 ;
+  altitude = altitude * temp * 5/9;
 }
 
-float cToF(float templ){
+float cToF(float temp){
  int quotient = 9/5;
  
- templ = templ * quotient;
- templ = templ + 32;
+ temp = temp * quotient;
+ temp = temp + 32;
 
- return templ;
+ return temp;
 }
