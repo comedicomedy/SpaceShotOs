@@ -4,17 +4,21 @@
 #include <SerialFlash.h>
 #include <SD.h>
 #include <GetAltitude.hpp>
+#include <string.h>
+
 
 Adafruit_BMP280 bmp;
 Adafruit_MPU6050 mpu;
 const int flashCS = 5;
 const int SDCS = 6;
-File data;
-SerialFlashFile flashData;
+File baromData;
+SerialFlashFile flashBaromData;
+File acelData;
+SerialFlashFile flashAcelData;
+File gyroData;
+SerialFlashFile flashGyroData;
 bool isStopped = false;
-float speed;
-float rotation;
-float altitude;
+String altStr;
 
 void setup() {
   pinMode(4, OUTPUT);
@@ -27,7 +31,7 @@ void setup() {
 
   //Tests for error
   if (!SD.begin(SDCS)) {
-    while (true)
+    while (true   )
     {
       Serial.print("Sd Error");
       digitalWrite(2,HIGH);
@@ -73,10 +77,13 @@ void setup() {
     }
     
   }
-  
-  flashData = SerialFlash.open("data.txt");
-  data = SD.open("data.txt", FILE_WRITE);
 
+  baromData = SD.open("BarometerData.txt", FILE_WRITE);
+  flashBaromData = SerialFlash.open("baromData.txt");
+  acelData = SD.open("AccelerometerData.txt", FILE_WRITE);
+  flashAcelData = SerialFlash.open("acelData.txt");
+  gyroData = SD.open("GyroscopeData.txt", FILE_WRITE);
+  flashGyroData = SerialFlash.open("gyroData.txt");
 }
 
 void loop() {
@@ -86,11 +93,18 @@ void loop() {
   }
 
 
-  if (isStopped = false && flashData && data) {
-    sensors_event_t a, g,temp;
-    mpu.getEvent(&a,&g,&temp);
+  if (isStopped = false && flashBaromData && baromData) {
+    float altitude = getAltitude(bmp.readPressure(), bmp.readTemperature());
+    altStr.concat(altitude);
 
-    
+    baromData.println(altStr + ", ");
+    //flashBaromData.write(altStr + ", ");
+    delay(500);
   }
-  
+
+  //if (isSt)
+  //{
+    
+  //}
+    
 }

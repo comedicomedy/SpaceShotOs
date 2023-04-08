@@ -1,8 +1,9 @@
 #include <math.h>
 #include <cstdlib>
 
-float getAltitude(float altitude, float pressure, float temp){
+float getAltitude(float pressure, float temp){
   temp = cToF(temp) + 459.67;
+  float altitude; 
 
   altitude = pressure * 10;
   altitude = altitude/101325;
