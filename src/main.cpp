@@ -6,7 +6,6 @@
 #include <GetAltitude.hpp>
 #include <string.h>
 
-
 Adafruit_BMP280 bmp;
 Adafruit_MPU6050 mpu;
 const int flashCS = 5;
@@ -19,6 +18,8 @@ File gyroData;
 SerialFlashFile flashGyroData;
 bool isStopped = false;
 String altStr;
+char buf[1];
+String Acel[3];
 
 void setup() {
   pinMode(4, OUTPUT);
@@ -93,18 +94,26 @@ void loop() {
   }
 
 
-  if (isStopped = false && flashBaromData && baromData) {
+  if (isStopped == false && flashBaromData && baromData) {
     float altitude = getAltitude(bmp.readPressure(), bmp.readTemperature());
     altStr.concat(altitude);
+    altStr = altStr + ", ";
 
-    baromData.println(altStr + ", ");
-    //flashBaromData.write(altStr + ", ");
+    baromData.println(altStr);
+    flashBaromData.write(buf, altitude);
+  
     delay(500);
+    altStr = "";
   }
 
-  //if (isSt)
-  //{
+  if (isStopped == false && flashAcelData && acelData){
+    sensors_event_t a, g, temp;
+    mpu.getEvent(&a, &g, &temp);
+
+    Acel[0].concat(a.acceleration.x);
+    Acel[1].concat(a.acceleration.y);
+    Acel[2].concat(a.acceleration.z);
     
-  //}
+  }
     
 }
