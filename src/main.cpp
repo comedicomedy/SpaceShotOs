@@ -21,6 +21,26 @@ char buf[1];
 String Acel[3];
 String gyroStr;
 
+float getAltitude(float pressure, float temp){
+  int quotient = 9/5;
+
+  temp = temp * quotient;
+  temp = temp + 32;
+  
+  float altitude; 
+
+  altitude = pressure * 10;
+  altitude = altitude/101325;
+  altitude = log(altitude);
+  altitude = altitude * 287.053;
+  altitude = altitude * temp * 0.566;
+  altitude = altitude / -9.8;
+  altitude = abs(altitude);
+
+  return altitude;
+}
+
+
 void setup() {
   pinMode(4, OUTPUT);
   pinMode(2,OUTPUT);
@@ -154,21 +174,3 @@ void loop() {
     
 }
 
-float getAltitude(float pressure, float temp){
-  int quotient = 9/5;
-
-  temp = temp * quotient;
-  temp = temp + 32;
-  
-  float altitude; 
-
-  altitude = pressure * 10;
-  altitude = altitude/101325;
-  altitude = log(altitude);
-  altitude = altitude * 287.053;
-  altitude = altitude * temp * 0.566;
-  altitude = altitude / -9.8;
-  altitude = abs(altitude);
-
-  return altitude;
-}
