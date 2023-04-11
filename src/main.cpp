@@ -3,7 +3,6 @@
 #include <Adafruit_BMP280.h>
 #include <SerialFlash.h>
 #include <SD.h>
-#include <GetAltitude.hpp>
 #include <string.h>
 
 Adafruit_BMP280 bmp;
@@ -20,6 +19,7 @@ bool isStopped = false;
 String altStr;
 char buf[1];
 String Acel[3];
+String gyroStr;
 
 void setup() {
   pinMode(4, OUTPUT);
@@ -32,7 +32,9 @@ void setup() {
 
   //Tests for error
   if (!SD.begin(SDCS)) {
-    while (true   )
+    isStopped = true;
+
+    while (true)
     {
       Serial.print("Sd Error");
       digitalWrite(2,HIGH);
@@ -42,6 +44,8 @@ void setup() {
     }
   }
   else if (!SerialFlash.begin(flashCS)) {
+    isStopped = true;
+
     while (true){
       Serial.print("Serial Flash Error");
       digitalWrite(2,HIGH);
@@ -55,6 +59,8 @@ void setup() {
     }
   }
   else if (!SerialFlash.begin(flashCS) && !SD.begin(SDCS)) {
+    isStopped = true;
+
     while (true){
       Serial.print("Both Error");
       digitalWrite(2,HIGH);
@@ -114,6 +120,55 @@ void loop() {
     Acel[1].concat(a.acceleration.y);
     Acel[2].concat(a.acceleration.z);
     
+    Acel[0] = "X Acel:"+ Acel[0] + ", ";
+    Acel[1] = "Y Acel:"+ Acel[1] + ", ";
+    Acel[2] = "Z Acel:"+ Acel[2] + ", ";
+
+    acelData.print(Acel[0]);
+    acelData.print(Acel[1]); 
+    acelData.print(Acel[2]); 
+    flashAcelData.write(buf, a.acceleration.x);
+    flashAcelData.write(buf, a.acceleration.y); 
+    flashAcelData.write(buf, a.acceleration.z);
+    
+    Acel[0] = "";
+    Acel[1] = "";
+    Acel[2] = ""; 
+    delay(500); 
+  }
+
+  if (isStopped == false && flashGyroData && gyroData)
+  {
+    sensors_event_t a, g, temp;
+    mpu.getEvent(&a, &g, &temp);
+    
+    gyroStr.concat(g.gyro.x);
+    gyroStr = gyroStr + ", ";
+
+    gyroData.print(gyroStr);
+    flashGyroData.write(buf, g.gyro.x);
+
+    gyroStr = "";
+    delay(500);
   }
     
+}
+
+float getAltitude(float pressure, float temp){
+  int quotient = 9/5;
+
+  temp = temp * quotient;
+  temp = temp + 32;
+  
+  float altitude; 
+
+  altitude = pressure * 10;
+  altitude = altitude/101325;
+  altitude = log(altitude);
+  altitude = altitude * 287.053;
+  altitude = altitude * temp * 0.566;
+  altitude = altitude / -9.8;
+  altitude = abs(altitude);
+
+  return altitude;
 }
