@@ -21,6 +21,7 @@ char buf[1];
 String Acel[3];
 String gyroStr;
 
+//Calculates Altitude
 float getAltitude(float pressure, float temp){
   int quotient = 9/5;
 
@@ -42,15 +43,17 @@ float getAltitude(float pressure, float temp){
 
 
 void setup() {
+  //LED Settings
   pinMode(4, OUTPUT);
   pinMode(2,OUTPUT);
+  //Starting Serial
   Serial.begin(9600);
   //IMU settings
   mpu.setAccelerometerRange(MPU6050_RANGE_16_G);
   mpu.setGyroRange(MPU6050_RANGE_2000_DEG);
 
 
-  //Tests for error
+  //Tests for errors
   if (!SD.begin(SDCS)) {
     isStopped = true;
 
@@ -105,6 +108,7 @@ void setup() {
     
   }
 
+  //Creates/Opens files
   baromData = SD.open("BarometerData.txt", FILE_WRITE);
   flashBaromData = SerialFlash.open("baromData.txt");
   acelData = SD.open("AccelerometerData.txt", FILE_WRITE);
@@ -114,12 +118,13 @@ void setup() {
 }
 
 void loop() {
+  //If they're are any errors this will stop the code
   if (Serial.readString() == "stop")
   {
     isStopped = true;
   }
 
-
+  //Writes data for barometer
   if (isStopped == false && flashBaromData && baromData) {
     float altitude = getAltitude(bmp.readPressure(), bmp.readTemperature());
     altStr.concat(altitude);
@@ -132,6 +137,7 @@ void loop() {
     altStr = "";
   }
 
+  //Writes data for accelerometer
   if (isStopped == false && flashAcelData && acelData){
     sensors_event_t a, g, temp;
     mpu.getEvent(&a, &g, &temp);
@@ -157,6 +163,7 @@ void loop() {
     delay(500); 
   }
 
+  //Writes Data for gyroscope
   if (isStopped == false && flashGyroData && gyroData)
   {
     sensors_event_t a, g, temp;
