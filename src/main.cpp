@@ -103,7 +103,7 @@ void setup() {
   else {
     while (true)
     {
-      digitalWrite(4,HIGH);
+     
     }
     
   }
@@ -118,6 +118,8 @@ void setup() {
 }
 
 void loop() {
+  digitalWrite(4,HIGH);
+
   //If they're are any errors this will stop the code
   if (Serial.readString() == "stop")
   {
